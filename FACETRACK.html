@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  
+
+    <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png" />
+
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico" />
+
+    <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111" />
+
+
+
+  
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+
+
+  <title>CodePen - Face Grid Track</title>
+
+    <link rel="canonical" href="https://codepen.io/ryankbrown/pen/QWQxQeB">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  
+  
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Helvetica", "Arial", san-serif;
+  font-size: 62.5%;
+  color: white;
+  background: black;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-size: 1.6rem;
+  width: 100%;
+  height: 100%;
+}
+
+.face-track {
+  --interior-padding: 2rem;
+  width: calc(100% - var(--interior-padding)*.5);
+  height: calc(100% - var(--interior-padding)*.5);
+  background: black;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.face-track__wrapper {
+  -webkit-touch-action: none;
+  touch-action: none;
+  width: 80%;
+  max-width: 90rem;
+  max-height: 100vh;
+  padding: var(--interior-padding);
+  display: grid;
+  grid-template-columns: repeat(var(--total-cols), 1fr);
+  grid-template-rows: repeat(var(--total-rows), 1fr);
+}
+.face-track__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+.face-track__img-wrapper {
+  grid-column: 1/span 1;
+  grid-row: 1/span 1;
+}
+.face-track__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.face-track__debug {
+  overflow: hidden;
+  grid-column: 1/span 1;
+  grid-row: 1/span 1;
+  z-index: 2;
+}
+
+.face-track {
+  --total-cols: 2;
+  --total-rows: 2;
+}
+.face-track .face-track__item:nth-child(n+5) {
+  display: none;
+}
+@media screen and (min-width: 768px) {
+  .face-track {
+    --total-cols: 3;
+    --total-rows: 3;
+  }
+  .face-track .face-track__item:nth-child(n+5) {
+    display: block;
+  }
+  .face-track .face-track__item:nth-child(n+10) {
+    display: none;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .face-track {
+    --total-cols: 4;
+    --total-rows: 4;
+  }
+  .face-track .face-track__item:nth-child(n+10) {
+    display: block;
+  }
+  .face-track .face-track__item:nth-child(n+17) {
+    display: none;
+  }
+}
+@media screen and (min-width: 1280px) {
+  .face-track {
+    --total-cols: 5;
+    --total-rows: 5;
+  }
+  .face-track .face-track__item:nth-child(n+17) {
+    display: block;
+  }
+  .face-track .face-track__item:nth-child(n+26) {
+    display: none;
+  }
+}
+
+.debug__start-track {
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  background: #393939;
+  border-radius: 50rem;
+  -webkit-appearance: none;
+  border: none;
+  font-family: "SF Mono", monospace;
+  margin: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  z-index: 10;
+  position: fixed;
+}
+.debug__panel {
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 17, 17, 0.9);
+  transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+  opacity: 0;
+  transform: translateY(50%);
+  border: solid 0.025rem rgba(128, 128, 128, 0.2);
+}
+.debug__table {
+  width: 100%;
+}
+.debug__table-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-auto-flow: row;
+  grid-template-areas: "head data";
+  border-bottom: none;
+  width: 100%;
+}
+.debug__group {
+  display: contents;
+  width: 100%;
+}
+.debug__head, .debug__data {
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+  font-size: 1rem;
+  font-family: "SF Mono", monospace;
+  border-bottom: solid 0.1rem rgba(255, 255, 255, 0.1);
+}
+.debug__head {
+  font-weight: normal;
+  grid-column: 1/span 1;
+  color: #aaa;
+  border-right: solid 0.1rem rgba(255, 255, 255, 0.1);
+}
+.debug__data {
+  grid-column: 2/span 1;
+  color: white;
+}
+.debug__toggle-label {
+  padding: 0 0.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  line-height: 0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  letter-spacing: -0.05rem;
+  border-top-right-radius: 0.5rem;
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  transition: transform 0.15s ease-in-out;
+  transition-delay: 0.25s;
+  transform: translateY(100%);
+}
+.face-track__item:hover .debug__toggle-label {
+  transform: translateY(0%);
+}
+.debug__toggle-label:hover {
+  background: #444;
+}
+@media screen and (min-width: 1024px) {
+  .debug__toggle-label {
+    font-size: 1.1rem;
+  }
+}
+@media screen and (min-width: 1280px) {
+  .debug__toggle-label {
+    font-size: 1.2rem;
+  }
+}
+.debug__panel-toggle {
+  display: none;
+}
+.debug__panel-toggle:checked + .debug__panel {
+  transform: translateY(0);
+  opacity: 1;
+}
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+</head>
+
+<body translate="no">
+  <section class="face-track" data-total-cols="5" data-total-rows="5">
+  <div class="face-track__wrapper">
+    <div class="face-track__item face-track__item--0" data-idx="0">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--0.jpg" width="1080" height="1280" alt="face-track--0"/></div>
+      <div class="face-track__debug debug--0">
+        <label class="debug__toggle-label" for="debug__panel-toggle--0">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--0" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--0">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--1" data-idx="1">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--1.jpg" width="1080" height="1280" alt="face-track--1"/></div>
+      <div class="face-track__debug debug--1">
+        <label class="debug__toggle-label" for="debug__panel-toggle--1">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--1" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--1">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--2" data-idx="2">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--2.jpg" width="1080" height="1280" alt="face-track--2"/></div>
+      <div class="face-track__debug debug--2">
+        <label class="debug__toggle-label" for="debug__panel-toggle--2">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--2" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--2">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--3" data-idx="3">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--3.jpg" width="1080" height="1280" alt="face-track--3"/></div>
+      <div class="face-track__debug debug--3">
+        <label class="debug__toggle-label" for="debug__panel-toggle--3">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--3" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--3">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--4" data-idx="4">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--4.jpg" width="1080" height="1280" alt="face-track--4"/></div>
+      <div class="face-track__debug debug--4">
+        <label class="debug__toggle-label" for="debug__panel-toggle--4">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--4" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--4">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--5" data-idx="5">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--5.jpg" width="1080" height="1280" alt="face-track--5"/></div>
+      <div class="face-track__debug debug--5">
+        <label class="debug__toggle-label" for="debug__panel-toggle--5">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--5" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--5">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--6" data-idx="6">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--6.jpg" width="1080" height="1280" alt="face-track--6"/></div>
+      <div class="face-track__debug debug--6">
+        <label class="debug__toggle-label" for="debug__panel-toggle--6">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--6" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--6">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--7" data-idx="7">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--7.jpg" width="1080" height="1280" alt="face-track--7"/></div>
+      <div class="face-track__debug debug--7">
+        <label class="debug__toggle-label" for="debug__panel-toggle--7">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--7" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--7">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--8" data-idx="8">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--8.jpg" width="1080" height="1280" alt="face-track--8"/></div>
+      <div class="face-track__debug debug--8">
+        <label class="debug__toggle-label" for="debug__panel-toggle--8">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--8" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--8">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--9" data-idx="9">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--9.jpg" width="1080" height="1280" alt="face-track--9"/></div>
+      <div class="face-track__debug debug--9">
+        <label class="debug__toggle-label" for="debug__panel-toggle--9">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--9" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--9">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--10" data-idx="10">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--10.jpg" width="1080" height="1280" alt="face-track--10"/></div>
+      <div class="face-track__debug debug--10">
+        <label class="debug__toggle-label" for="debug__panel-toggle--10">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--10" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--10">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--11" data-idx="11">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--11.jpg" width="1080" height="1280" alt="face-track--11"/></div>
+      <div class="face-track__debug debug--11">
+        <label class="debug__toggle-label" for="debug__panel-toggle--11">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--11" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--11">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--12" data-idx="12">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--12.jpg" width="1080" height="1280" alt="face-track--12"/></div>
+      <div class="face-track__debug debug--12">
+        <label class="debug__toggle-label" for="debug__panel-toggle--12">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--12" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--12">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--13" data-idx="13">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--13.jpg" width="1080" height="1280" alt="face-track--13"/></div>
+      <div class="face-track__debug debug--13">
+        <label class="debug__toggle-label" for="debug__panel-toggle--13">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--13" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--13">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--14" data-idx="14">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--14.jpg" width="1080" height="1280" alt="face-track--14"/></div>
+      <div class="face-track__debug debug--14">
+        <label class="debug__toggle-label" for="debug__panel-toggle--14">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--14" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--14">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--15" data-idx="15">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--15.jpg" width="1080" height="1280" alt="face-track--15"/></div>
+      <div class="face-track__debug debug--15">
+        <label class="debug__toggle-label" for="debug__panel-toggle--15">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--15" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--15">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--16" data-idx="16">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--16.jpg" width="1080" height="1280" alt="face-track--16"/></div>
+      <div class="face-track__debug debug--16">
+        <label class="debug__toggle-label" for="debug__panel-toggle--16">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--16" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--16">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--17" data-idx="17">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--17.jpg" width="1080" height="1280" alt="face-track--17"/></div>
+      <div class="face-track__debug debug--17">
+        <label class="debug__toggle-label" for="debug__panel-toggle--17">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--17" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--17">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--18" data-idx="18">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--18.jpg" width="1080" height="1280" alt="face-track--18"/></div>
+      <div class="face-track__debug debug--18">
+        <label class="debug__toggle-label" for="debug__panel-toggle--18">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--18" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--18">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--19" data-idx="19">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--19.jpg" width="1080" height="1280" alt="face-track--19"/></div>
+      <div class="face-track__debug debug--19">
+        <label class="debug__toggle-label" for="debug__panel-toggle--19">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--19" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--19">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--20" data-idx="20">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--20.jpg" width="1080" height="1280" alt="face-track--20"/></div>
+      <div class="face-track__debug debug--20">
+        <label class="debug__toggle-label" for="debug__panel-toggle--20">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--20" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--20">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--21" data-idx="21">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--21.jpg" width="1080" height="1280" alt="face-track--21"/></div>
+      <div class="face-track__debug debug--21">
+        <label class="debug__toggle-label" for="debug__panel-toggle--21">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--21" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--21">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--22" data-idx="22">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--22.jpg" width="1080" height="1280" alt="face-track--22"/></div>
+      <div class="face-track__debug debug--22">
+        <label class="debug__toggle-label" for="debug__panel-toggle--22">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--22" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--22">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--23" data-idx="23">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--23.jpg" width="1080" height="1280" alt="face-track--23"/></div>
+      <div class="face-track__debug debug--23">
+        <label class="debug__toggle-label" for="debug__panel-toggle--23">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--23" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--23">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="face-track__item face-track__item--24" data-idx="24">
+      <div class="face-track__img-wrapper"><img class="face-track__img" src="https://assets.codepen.io/172456/face-track--24.jpg" width="1080" height="1280" alt="face-track--24"/></div>
+      <div class="face-track__debug debug--24">
+        <label class="debug__toggle-label" for="debug__panel-toggle--24">
+          <pre>&lt;/&gt;</pre>
+        </label>
+        <input class="debug__panel-toggle" id="debug__panel-toggle--24" type="checkbox"/>
+        <div class="debug__panel">
+          <table class="debug__table">
+            <tbody class="debug__table-wrapper debug__table-wrapper--24">
+                            <tr class="debug__group debug__group--idx">
+                              <th class="debug__head debug__head--idx">idx</th>
+                              <td class="debug__data debug__data--idx">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--position">
+                              <th class="debug__head debug__head--position">pos</th>
+                              <td class="debug__data debug__data--position">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--pointer">
+                              <th class="debug__head debug__head--pointer">pointer</th>
+                              <td class="debug__data debug__data--pointer">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--dist">
+                              <th class="debug__head debug__head--dist">pntDist</th>
+                              <td class="debug__data debug__data--dist">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--faceturn">
+                              <th class="debug__head debug__head--faceturn">face_turn</th>
+                              <td class="debug__data debug__data--faceturn">unknown</td>
+                            </tr>
+                            <tr class="debug__group debug__group--new-idx">
+                              <th class="debug__head debug__head--new-idx">new_idx</th>
+                              <td class="debug__data debug__data--new-idx">unknown</td>
+                            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  
+      <script id="rendered-js" >
+// - - - Global - - - - -
+
+const img_path = "https://assets.codepen.io/172456/face-track--";
+
+// - - - Utility Functions - - - - -
+
+function constrainNum(val, min, max) {
+  let output;
+  if (val >= max) {
+    output = max;
+  } else
+  if (val <= min) {
+    output = min;
+  } else {
+    output = val;
+  }
+  return output;
+}
+
+function roundFloat(num, dec = 0) {
+  return parseFloat(num).toFixed(dec);
+}
+
+// - - - Image Src Pool - - - - -
+
+// The numbers here correspond to a SOURCE image grid. This grid should be thought of separate from the DISPLAYED image grid.
+
+const total_cols = 5;
+const total_rows = 5;
+const total_srcs = total_cols * total_rows;
+const img_pool_arry = [];
+
+// 01. Create 2D Array
+for (let row = 0; row < total_rows; row++) {
+  for (let col = 0; col < total_cols; col++) {
+    img_pool_arry[row] = [];
+  }
+}
+
+// 02. Fill 2D array with rows and column index spaces.
+for (let idx = 0; idx < total_srcs; idx++) {
+  let col_num = idx % total_rows;
+  let row_num = Math.floor(idx / total_cols);
+  img_pool_arry[row_num][col_num] = idx;
+}
+
+// 03. Find the Center Src Img Indx
+const center_row = (total_rows - 1) / 2;
+const center_col = (total_cols - 1) / 2;
+const center_src_idx = img_pool_arry[center_row][center_col];
+
+
+// - - - - Image Src Pool - - - - -
+
+class FaceImg {
+  constructor(el, idx) {
+    this.el = el;
+    this.idx = parseInt(idx);
+    this.el_img = this.el.querySelector('.face-track__img');
+    this.debug = this.el.querySelector(`.face-track__debug`);
+    this.calcSizePos();
+    this.getAttr();
+  }
+  calcSizePos() {
+    this.x = this.el.getBoundingClientRect().left;
+    this.y = this.el.getBoundingClientRect().top;
+    this.w = this.el.getBoundingClientRect().width;
+    this.h = this.el.getBoundingClientRect().height;
+
+    this.cX = roundFloat(this.x + this.w / 2, 1);
+    this.cY = roundFloat(this.y + this.h / 2, 1);
+  }
+  getAttr() {
+    this.row_id = parseInt(this.el.getAttribute('data-row'));
+    this.col_id = parseInt(this.el.getAttribute('data-col'));
+  }
+  turnFace() {
+    // 01. Get the distance from the pointer and this Img
+    let pointer_dist_x = roundFloat(pointer_pos.x - this.x, 0);
+    let pointer_dist_y = roundFloat(pointer_pos.y - this.y, 0);
+
+    // 02. Convert that distance to be divisible by the img width, or in other words a unit width of the image. This is by how much the face should turn.
+    let face_turn_x = Math.floor(pointer_dist_x / this.w);
+    let face_turn_y = Math.floor(pointer_dist_y / this.h);
+
+    // 03. Three things happening:
+    // a) Reference the center idx of the img_src_pool with center_row and center_col.
+    // b) Add the face turn amount to the center idx
+    // c) Certain screen sizes and and point distances will yield turn idx numbers that are larger than the lengths of img_src_pool array rows and cols. So we constrain those idx numbers to the length of the row array (img_pool_arry.length -1) and the interior col arrays (img_pool_arry[0].length - 1).
+    let calc_turn_row = constrainNum(center_row + face_turn_x, 0, img_pool_arry.length - 1);
+    let calc_turn_col = constrainNum(center_col + face_turn_y, 0, img_pool_arry[0].length - 1);
+
+    // 04. Look up the new_src_idx from img_pool_arry based off the calc_turn values and concatenate a strg.
+    let new_src_idx = img_pool_arry[calc_turn_col][calc_turn_row];
+    let new_src_strg = `${img_path}${new_src_idx}.jpg`;
+
+    // 05. Replace the old src of the img with the new src.
+    this.el_img.src = new_src_strg;
+
+    if (this.debug.querySelector('input').checked) {
+      this.debug.querySelector('.debug__data--idx').textContent = `${this.idx}`;
+      this.debug.querySelector('.debug__data--position').textContent = `x:${this.cX}, y:${this.cY}`;
+      this.debug.querySelector('.debug__data--pointer').textContent = `x:${pointer_pos.x}, y:${pointer_pos.y}`;
+      this.debug.querySelector('.debug__data--dist').textContent = `x:${pointer_dist_x}, y:${pointer_dist_y}`;
+      this.debug.querySelector('.debug__data--faceturn').textContent = `x:${face_turn_x}, y:${face_turn_y}`;
+      this.debug.querySelector('.debug__data--new-idx').textContent = `${new_src_idx}`;
+    }
+  }}
+
+
+// - - - Face Img Obj Creation - - -
+
+let face_img_arry = [];
+let face_imgs = document.querySelectorAll('.face-track__item');
+
+face_imgs.forEach((img, idx) => {
+  face_img_arry.push(new FaceImg(img, idx));
+});
+
+// - - - Debug Code - - -
+
+let tracking = false;
+let pollPosLoop = setInterval(() => {
+  requestAnimationFrame(() => {
+    for (let f of face_img_arry) {
+      // if ( getComputedStyle(f.el).display === "block" ) {
+      f.turnFace();
+      // }
+    }
+  });
+}, 60);
+tracking = true;
+
+// let debug_start_track = document.querySelector('.debug__start-track');
+// const debug = document.querySelector('.debug');
+// debug_start_track.addEventListener('click', () => {
+// 	if ( !tracking ) {
+// 		pollPosLoop = setInterval(()=> {
+// 			requestAnimationFrame( ()=> {
+// 				for (let f of face_img_arry ) {
+// 					// if ( getComputedStyle(f.el).display === "block" ) {
+// 						f.turnFace();
+// 					// }
+// 				}
+// 			})
+// 		}, 60)
+// 		tracking = true;
+// 		debug_start_track.textContent = "Stop Tracking";
+// 	} else {
+// 		clearInterval(pollPosLoop);
+// 		tracking = false;
+// 		debug_start_track.textContent = "Start Tracking";
+// 	}
+// },true);
+
+// - - - Event Listeners - - -
+
+const pointer_pos = {
+  x: null,
+  y: null };
+
+
+window.addEventListener('mousemove', e => {
+  pointer_pos.x = e.clientX;
+  pointer_pos.y = e.clientY;
+});
+
+window.addEventListener('resize', () => {
+  for (let f of face_img_arry) {
+    f.calcSizePos();
+  }
+});
+
+window.addEventListener('touchmove', e => {
+  pointer_pos.x = e.touches[0].clientX;
+  pointer_pos.y = e.touches[0].clientY;
+});
+//# sourceURL=pen.js
+    </script>
+
+  
+</body>
+
+</html>

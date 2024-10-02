@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  
+
+    <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png" />
+
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico" />
+
+    <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111" />
+
+
+
+  
+  
+
+  <title>CodePen - Shutter Effects Image Slider </title>
+
+    <link rel="canonical" href="https://codepen.io/alidz/pen/bdJeBN">
+  
+  
+  
+  
+<style>
+#container{
+	width:500px;
+	height:300px;
+	
+	border:5px solid #fff;
+	overflow:hidden;
+	
+	-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#container ul{
+	list-style:none;
+ margin:0;
+padding:0;
+}
+
+#page{
+	width: 500px;
+	margin:0 auto;
+	border-top:1px solid transparent;
+}
+
+.credit{
+	text-align:center;
+	padding: 20px 0 100px;
+	font-size:10px;
+}
+
+
+.shutterAnimationHolder .film canvas{
+	display: block;
+    margin: 0 auto;
+}
+
+.shutterAnimationHolder .film{
+	position:absolute;
+	left:50%;
+	top:0;
+}
+
+.shutterAnimationHolder{
+	position:absolute;
+	overflow:hidden;
+	top:0;
+	left:0;
+	z-index:1000;
+}
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+</head>
+
+<body translate="no">
+  <script src="//www.hscripts.com/js/jquery.js?v=2"></script>
+
+
+
+<!-- general_list1_con begins -->
+    <div class="resp_code">
+    <script type="text/javascript">
+</script>
+<script type="text/javascript">
+$(function(){
+
+$('.fadein img:gt(0)').hide();
+
+setInterval(function(){$('.fadein :first-child').fadeOut().next('img').fadeIn().end().appendTo('.fadein');}, 2000);
+});
+</script>
+
+  
+<div id="page">
+	<div align=center><b>Shutter Effects Image Slider</b></div><br>
+  
+  
+  
+  
+  
+  
+  
+
+
+<center>
+
+
+<!-- هاك الإعلان المتغير بعد كل تحديث -->
+<script language="javascript">
+
+
+
+
+function banner() {
+
+
+
+
+imagens = new Array();
+textos = new Array();
+urls = new Array();
+
+
+
+
+
+
+
+imagens[0] =  "http://arab.sh/scripts/img/arabsh_logo_n.png";
+imagens[1] =  "http://downloads.m5zn.com/templates/images/m5zn_logo.jpg";
+imagens[2] =  "http://exarab.com/support/wp-content/uploads/logo.png";
+imagens[3] =  "data:image/png;base64,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";
+imagens[4] =  "http://likesplanet.com/img/anim2.gif";
+imagens[5] =  "https://macmedimo.files.wordpress.com/2015/07/d2319-hitleap-tang-traffic-kiem-tien-online-13-www-c10mt-com.jpg?w=277&h=178";
+imagens[6] =  "http://www.filedwon.info/swf/bn1.gif";
+imagens[7] =  "http://trefiles.com/images/eyesfile.com.jpg";
+imagens[8] =  "https://1.bp.blogspot.com/-m1YrQT_-JZU/VK_9GM96PgI/AAAAAAAABvI/blThxTQNrcs/s1600/hulkload.png";
+imagens[9] =  "http://free-uploading.com/images/logo.gif";
+imagens[10] =  "https://1.bp.blogspot.com/-JyY8meJdU4w/UsBZpUvZ_dI/AAAAAAAACG8/7sHeCDK4t2Y/s1600/media1fire+logo.png";
+imagens[11] =  "http://img.xooimage.com/files110/f/3/c/ti1_1-4c65f40.png";
+  
+
+
+
+
+textos[0]="NooR7-Us";
+textos[1]="NooR7-Us";
+textos[2]="NooR7-Us";
+textos[3]="NooR7-Us";
+textos[4]="NooR7-Us";
+textos[5]="NooR7-Us";
+textos[6]="NooR7-Us";
+textos[7]="NooR7-Us";
+textos[8]="NooR7-Us";
+textos[9]="NooR7-Us";
+textos[10]="NooR7-Us";
+textos[11]="NooR7-Us";
+
+
+
+  
+
+urls[0] = "http://arab.sh/free1655.html";
+urls[1] = "http://www.m5zn.com/register.php?ref=148658";
+urls[2] = "http://exarab.com/ads/index.php?ra=157";
+urls[3] = "https://userscloud.com/free189553.html";
+urls[4] = "http://likesplanet.com/promote.php?ref=latrali";
+urls[5] = "http://hitleap.com/by/latrali";
+urls[6] = "http://www.filedwon.info/free14814.html";
+urls[7] = "http://www.trefiles.com/free6701.html";
+urls[8] = "http://hulkload.com/free17140.html";
+urls[9] = "http://free-uploading.com/free4929.html";
+urls[10] = "http://up.media1fire.com/free17516.html";
+urls[11] = "http://maktabati.xoo.it/index.php";
+  
+
+
+
+
+
+
+
+
+var sorteia=Math.random() * imagens.length;
+var ncerto=parseInt(sorteia);
+document.write("<a href="+urls[ncerto]+"><img border=0 src="+imagens[ncerto]+" alt="+textos[ncerto]+"></a>");
+}
+banner();
+//-->
+  </script>
+
+
+
+
+<!-- هاك الإعلان المتغير بعد كل تحديث -->
+
+
+
+
+</center>
+
+
+
+
+
+ <br>
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div id="container">
+    	<ul>
+        	<li><img src="https://www.hscripts.com/scripts/jquery/shutter-effects/images/image1.jpg" width="500" height="300" /></li>
+            <li><img src="https://www.hscripts.com/scripts/jquery/shutter-effects/images/image2.jpg" width="500" height="300" /></li>
+            <li><img src="https://www.hscripts.com/scripts/jquery/shutter-effects/images/image3.jpg" width="500" height="300"/></li>
+            <li><img src="https://www.hscripts.com/scripts/jquery/shutter-effects/images/image4.jpg" width="500" height="300"  /></li>
+          <li><img src="https://www.hscripts.com/scripts/jquery/shutter-effects/images/image5.jpg" width="500" height="300"  /></li>
+        </ul>
+    </div>
+</div>
+<div align=center style=" font-size: 10px;color: #dadada;" id="dumdiv">
+<a href="//www.hscripts.com" id="dum" style="padding-right:0px; text-decoration:none;color: #dadada;">&copy;h</a></div>
+
+<script type='text/javascript' src="https://www.hscripts.com/scripts/jquery/shutter-effects/jquery.js"></script>
+<script type='text/javascript'>
+$(document).ready(function(){
+ var sds = document.getElementById("dum");
+    if(sds == null){
+        alert("You are using a free package.\n You are not allowed to remove the tag.\n");
+    }
+    var sdss = document.getElementById("dumdiv");
+    if(sdss == null){
+        alert("You are using a free package.\n You are not allowed to remove the tag.\n");
+    }
+if(sds!=null){
+
+	var container = $('#container'),
+		li = container.find('li');
+	container.tzShutter({
+		imgSrc: 'https://www.hscripts.com/scripts/jquery/shutter-effects/images/shutter.png',
+		closeCallback: function(){
+			li.filter(':visible:first').hide();
+			
+			if(li.filter(':visible').length == 0){
+				li.show();
+			}
+			setTimeout(function(){container.trigger('shutterOpen')},100);
+		},
+		loadCompleteCallback:function(){
+			setInterval(function(){
+				container.trigger('shutterClose');
+			},2000);
+			container.trigger('shutterClose');
+		}
+	});
+}	
+});
+</script>
+    </div>
+    <div class="clear"></div>
+    <div class='f_right'>
+    <!-- general_list1_con ends -->
+    <!--div class='bookmark'>
+<script type='text/javascript'> 
+var bkmrksize='small';
+var bkmrkpadding='3';
+var bkmrkname='ftglsr';
+var iframeheight='40';
+var iframewidth='180';
+var iframestyle='';
+var bkmrkurl=window.location.href;
+var bkmrktitle=document.getElementsByTagName('title')[0].innerHTML; 
+  </script>
+ <script type='text/javascript' src='//www.hscripts.com/bookmarks/bookmark.js?v=1' ></script>
+</div--></div>
+<div class="clear"></div> 
+    <!-- general_list1_con ends -->
+  
+  
+  
+</body>
+
+</html>
